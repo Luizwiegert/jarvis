@@ -14,22 +14,19 @@ Assistente pessoal sempre ligado, com voz, memória e personalidade próprias. U
 
 ## Arquitetura
 
-```text
- microfone ──► palavra de ativação ──► detecção de fala ──► Whisper ─┐
-                                                                     │
- Telegram ───────────────────────────────────────────────────────────┤
-                                                                     ▼
- terminal ──────────────────────────────────────────────►  NÚCLEO (Python)
-                                                           conversa do dia
-                                                           data e hora no contexto
-                                                                     │
-                                                                     ▼
-                                              Claude Code (processo sempre aberto,
-                                              resposta em streaming)
-                                                 │                 │
-                                                 ▼                 ▼
-                                         memória e persona   voz sintetizada
-                                           (Markdown)        frase por frase
+```mermaid
+flowchart TD
+    mic["Microfone"] --> wake["Palavra de ativação<br/>openWakeWord"]
+    wake --> vad["Detecção de fala"]
+    vad --> stt["Transcrição<br/>Whisper"]
+    tg["Telegram"] --> nucleo
+    term["Terminal"] --> nucleo
+    stt --> nucleo["Núcleo em Python<br/>conversa do dia, data e hora no contexto"]
+    nucleo --> claude["Claude Code<br/>processo sempre aberto, resposta em streaming"]
+    claude <--> mem[("Memória e persona<br/>arquivos Markdown")]
+    claude --> tts["Voz sintetizada<br/>frase por frase"]
+    claude --> txt["Resposta em texto<br/>Telegram e terminal"]
+    tts --> spk["Alto-falante"]
 ```
 
 | Módulo | Papel |
